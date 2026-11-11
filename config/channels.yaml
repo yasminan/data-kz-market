@@ -1,0 +1,11 @@
+channels:
+  - username: ml_jobs_kz      # DSML KZ: data/ML jobs, usually with salary
+  - username: it_jobs_kz      # DSML KZ: IT jobs
+  - username: devs_kz         # large KZ dev community, ~10k subscribers
+  - username: itworkkz
+  - username: halyk_jumys     # Halyk Bank's own job channel
+  - username: thetechkz       # tech news + vacancies (mixed)
+  - username: we_project      # careers, internships, grants (mixed)
+  - username: huntmeinternship
+  - username: rabota_5g
+  - username: oppo4you

@@ -1,0 +1,20 @@
+[project]
+name = "data-kz-market"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.8",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "qrcode>=8.2",
+    "telethon>=1.45.0",
+    "tenacity>=9.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.4",
+]
