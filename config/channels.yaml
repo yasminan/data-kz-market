@@ -1,11 +1,16 @@
 channels:
-  - username: ml_jobs_kz      # DSML KZ: data/ML jobs, usually with salary
-  - username: it_jobs_kz      # DSML KZ: IT jobs
-  - username: devs_kz         # large KZ dev community, ~10k subscribers
-  - username: itworkkz
-  - username: halyk_jumys     # Halyk Bank's own job channel
-  - username: thetechkz       # tech news + vacancies (mixed)
-  - username: we_project      # careers, internships, grants (mixed)
-  - username: huntmeinternship
-  - username: rabota_5g
-  - username: oppo4you
+  # core: Kazakhstan tech/data vacancies, used for all market questions
+  - {username: itworkkz,   include: true,  tier: core}
+  - {username: devs_kz,    include: true,  tier: core}
+  - {username: ml_jobs_kz, include: true,  tier: core}
+  - {username: it_jobs_kz, include: true,  tier: core}
+  # internships / entry level: mostly hh.kz link posts, some full vacancies
+  - {username: huntmeinternship, include: true, tier: internship}
+  # single employer: official Halyk channel, mostly Kazakh, no salaries;
+  # kept out of market-share questions, used for language analysis
+  - {username: halyk_jumys, include: true, tier: employer}
+  # excluded (reasons go in the README)
+  - {username: we_project,  include: false, tier: excluded}  # Central Asia-wide, mixed with grants/scholarships
+  - {username: thetechkz,   include: false, tier: excluded}  # mostly news
+  - {username: rabota_5g,   include: false, tier: excluded}  # ~1% vacancies
+  - {username: oppo4you,    include: false, tier: excluded}  # inactive

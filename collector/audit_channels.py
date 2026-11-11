@@ -10,6 +10,7 @@ from collector.config import TG_API_HASH, TG_API_ID
 VACANCY = re.compile(
     r"требован|обязанност|responsibilit|requirement|вакансия|мы ищем|"
     r"we are looking|опыт работы|experience|зарплата|salary",
+    r"талаптар|міндеттер|талап етіледі|жұмыс сипаттамасы|жалақы",
     re.IGNORECASE,
 )
 SALARY = re.compile(r"\d[\d\s.,]*\s?(₸|kzt|тг|тенге|\$|usd|000)", re.IGNORECASE)
