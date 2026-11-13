@@ -1,0 +1,123 @@
+# Skills dictionary. Each skill has a canonical name, a category and regex patterns
+# (case-insensitive unless case_sensitive: true). Patterns are wrapped in word boundaries
+# automatically, so "sql" doesn't match inside "postgresql" and "excel" not inside "excellent".
+
+skills:
+  # ---------------------------------------------------------------- programming
+  - {name: Python, category: programming, patterns: ['python', 'питон\w*']}
+  - {name: SQL, category: programming, patterns: ['sql', 't-sql', 'pl/sql', 'plsql', 'sql-запрос\w*']}
+  - {name: R, category: programming, case_sensitive: true, patterns: ['(?<![&/.-])R(?![&/.-])']}
+  - {name: Java, category: programming, patterns: ['java(?!\s?script)']}
+  - {name: Scala, category: programming, patterns: ['scala']}
+  - {name: Go, category: programming, case_sensitive: true,
+     patterns: ['[Gg]olang', 'Go(?=[ -](developer|разработчик|engineer|backend))', 'Go(?=\s*[,/)])', '(?<=[,/(]\s)Go', '(?<=[,/(])Go']}
+  - {name: C++, category: programming, patterns: ['c\+\+']}
+  - {name: C#, category: programming, patterns: ['c#']}
+  - {name: .NET, category: programming, patterns: ['\.net', 'asp\.net', 'dotnet']}
+  - {name: JavaScript, category: programming, patterns: ['javascript', 'js', 'node\.?js']}
+  - {name: TypeScript, category: programming, patterns: ['typescript']}
+  - {name: Kotlin, category: programming, patterns: ['kotlin']}
+  - {name: Swift, category: programming, patterns: ['swift']}
+  - {name: PHP, category: programming, patterns: ['php']}
+  - {name: 1C, category: programming, patterns: ['1[сc]']}
+  - {name: Bash, category: programming, patterns: ['bash', 'shell']}
+  - {name: VBA, category: programming, patterns: ['vba']}
+  - {name: SAS, category: programming, case_sensitive: true, patterns: ['SAS']}
+
+  # ---------------------------------------------------------------- databases
+  - {name: PostgreSQL, category: database, patterns: ['postgres\w*', 'pgsql']}
+  - {name: MySQL, category: database, patterns: ['mysql', 'mariadb']}
+  - {name: Oracle, category: database, patterns: ['oracle']}
+  - {name: MS SQL Server, category: database, patterns: ['ms ?sql', 'sql server', 'mssql']}
+  - {name: ClickHouse, category: database, patterns: ['click ?house']}
+  - {name: Greenplum, category: database, patterns: ['greenplum', 'geenplum']}
+  - {name: MongoDB, category: database, patterns: ['mongo\w*']}
+  - {name: Redis, category: database, patterns: ['redis']}
+  - {name: Elasticsearch, category: database, patterns: ['elastic\w*', 'opensearch']}
+  - {name: BigQuery, category: database, patterns: ['big ?query']}
+  - {name: Snowflake, category: database, patterns: ['snowflake']}
+  - {name: Vertica, category: database, patterns: ['vertica']}
+
+  # ---------------------------------------------------------------- BI and spreadsheets
+  - {name: Excel, category: bi, patterns: ['excel', 'эксель\w*', 'xlsx?']}
+  - {name: Google Sheets, category: bi, patterns: ['google sheets', 'google таблиц\w*', 'гугл[- ]таблиц\w*']}
+  - {name: Power BI, category: bi, patterns: ['power ?bi', 'pbi', 'dax', 'power query']}
+  - {name: Tableau, category: bi, patterns: ['tableau']}
+  - {name: Qlik, category: bi, patterns: ['qlik\w*']}
+  - {name: Looker, category: bi, patterns: ['looker( studio)?', '(google )?data studio']}
+  - {name: Superset, category: bi, patterns: ['superset']}
+  - {name: Metabase, category: bi, patterns: ['metabase']}
+  - {name: Grafana, category: bi, patterns: ['grafana']}
+  - {name: DataLens, category: bi, patterns: ['datalens']}
+
+  # ---------------------------------------------------------------- data engineering
+  - {name: ETL, category: data_engineering, patterns: ['etl', 'elt']}
+  - {name: DWH, category: data_engineering, patterns: ['dwh', 'data warehouse\w*', 'хранилищ\w* данных', 'data ?lake\w*', 'lakehouse']}
+  - {name: Airflow, category: data_engineering, patterns: ['airflow']}
+  - {name: Spark, category: data_engineering, patterns: ['spark', 'pyspark']}
+  - {name: Kafka, category: data_engineering, patterns: ['kafka']}
+  - {name: Hadoop, category: data_engineering, patterns: ['hadoop', 'hdfs', 'hive']}
+  - {name: dbt, category: data_engineering, patterns: ['dbt']}
+  - {name: Informatica, category: data_engineering, patterns: ['informatica']}
+  - {name: NiFi, category: data_engineering, patterns: ['nifi']}
+
+  # ---------------------------------------------------------------- ML and AI
+  - {name: Machine learning, category: ml, patterns: ['machine learning', 'машинн\w* обучени\w*', 'ml']}
+  - {name: Deep learning, category: ml, patterns: ['deep learning', 'глубок\w* обучени\w*', 'нейронн\w* сет\w*', 'neural networks?']}
+  - {name: NLP, category: ml, patterns: ['nlp', 'natural language processing']}
+  - {name: Computer vision, category: ml, patterns: ['computer vision', 'компьютерн\w* зрени\w*']}
+  - {name: LLM, category: ml, patterns: ['llms?', 'large language models?', 'gpt\w*', 'genai', 'generative ai', 'генеративн\w*']}
+  - {name: RAG, category: ml, patterns: ['rag', 'retrieval[- ]augmented']}
+  - {name: Forecasting, category: ml, patterns: ['forecasting', 'прогнозировани\w*', 'time series', 'временн\w* ряд\w*']}
+  - {name: pandas, category: ml, patterns: ['pandas']}
+  - {name: NumPy, category: ml, patterns: ['numpy']}
+  - {name: scikit-learn, category: ml, patterns: ['scikit[- ]?learn', 'sklearn']}
+  - {name: PyTorch, category: ml, patterns: ['pytorch', 'torch']}
+  - {name: TensorFlow, category: ml, patterns: ['tensorflow', 'keras']}
+  - {name: Gradient boosting, category: ml, patterns: ['xgboost', 'lightgbm', 'catboost', 'gradient boosting', 'градиентн\w* бустинг\w*']}
+  - {name: Hugging Face, category: ml, patterns: ['hugging ?face']}
+  - {name: OpenCV, category: ml, patterns: ['opencv']}
+  - {name: LangChain, category: ml, patterns: ['langchain', 'langgraph', 'llama ?index']}
+  - {name: MLflow, category: ml, patterns: ['mlflow']}
+
+  # ---------------------------------------------------------------- analysis methods and product analytics
+  - {name: Statistics, category: methods, patterns: ['статистик\w*', 'statistic\w*', 'теори\w* вероятност\w*', 'probability']}
+  - {name: A/B testing, category: methods, patterns: ['a/b[- ]?тест\w*', 'a/b[- ]?test\w*', 'ab[- ]тест\w*', 'split[- ]тест\w*', 'experimentation']}
+  - {name: Product metrics, category: methods,
+     patterns: ['retention', 'ltv', 'arpu', 'dau', 'mau', 'unit[- ]экономик\w*', 'unit economics', 'воронк\w*', 'funnels?', 'продуктов\w* метрик\w*', 'product metrics']}
+  - {name: Google Analytics, category: product_analytics, patterns: ['google analytics', 'ga4']}
+  - {name: Amplitude, category: product_analytics, patterns: ['amplitude']}
+  - {name: AppMetrica, category: product_analytics, patterns: ['app ?metrica']}
+  - {name: Yandex Metrica, category: product_analytics, patterns: ['яндекс[. ]?метрик\w*', 'yandex[. ]?metri[ck]a']}
+
+  # ---------------------------------------------------------------- requirements and modelling (BA / SA)
+  - {name: BPMN, category: ba_sa, patterns: ['bpmn']}
+  - {name: UML, category: ba_sa, patterns: ['uml']}
+  - {name: ER diagrams, category: ba_sa, patterns: ['erd', 'er[- ]диаграмм\w*', 'er[- ]diagrams?', 'er[- ]модел\w*']}
+  - {name: User stories, category: ba_sa, patterns: ['user stor(y|ies)', 'пользовательск\w* истори\w*']}
+  - {name: Use cases, category: ba_sa, patterns: ['use[- ]?cases?']}
+  - {name: API, category: ba_sa, patterns: ['api', 'rest[- ]?api', 'restful']}
+  - {name: SOAP, category: ba_sa, patterns: ['soap']}
+  - {name: Swagger / OpenAPI, category: ba_sa, patterns: ['swagger', 'openapi']}
+  - {name: Postman, category: ba_sa, patterns: ['postman']}
+  - {name: JSON / XML, category: ba_sa, patterns: ['json', 'xml']}
+  - {name: Jira, category: ba_sa, patterns: ['jira']}
+  - {name: Confluence, category: ba_sa, patterns: ['confluence']}
+  - {name: Figma, category: ba_sa, patterns: ['figma']}
+  - {name: Miro, category: ba_sa, patterns: ['miro']}
+  - {name: Draw.io / Visio, category: ba_sa, patterns: ['draw\.?io', 'diagrams\.net', 'visio']}
+  - {name: Agile / Scrum, category: ba_sa, patterns: ['agile', 'scrum', 'kanban', 'аджайл', 'скрам']}
+
+  # ---------------------------------------------------------------- engineering tools and cloud
+  - {name: Git, category: devops, patterns: ['git', 'github', 'gitlab']}
+  - {name: Docker, category: devops, patterns: ['docker']}
+  - {name: Kubernetes, category: devops, patterns: ['kubernetes', 'k8s']}
+  - {name: Linux, category: devops, patterns: ['linux', 'unix']}
+  - {name: CI/CD, category: devops, patterns: ['ci/cd', 'ci ?cd']}
+  - {name: AWS, category: cloud, patterns: ['aws', 'amazon web services']}
+  - {name: Google Cloud, category: cloud, patterns: ['gcp', 'google cloud']}
+  - {name: Azure, category: cloud, patterns: ['azure']}
+
+  # ---------------------------------------------------------------- languages
+  - {name: English, category: language, patterns: ['english', 'английск\w*', 'ағылшын\w*']}
+  - {name: Kazakh, category: language, patterns: ['казахск\w*', 'kazakh', 'қазақ\w*']}

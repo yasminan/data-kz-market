@@ -26,6 +26,10 @@ SALARY_CASES = [
     ("от 700 000 ₸ (обсуждается по результатам)", 700_000, None, "KZT", None, "month"),
     ("до 3000$", None, 3_000, "USD", None, "month"),
     ("75.000 KZT за проект (~ 4 часа работы)", 75_000, 75_000, "KZT", None, "project"),
+    ("800 000 - 1 500 000 Net\n+ Годовой бонус 30% при выполнении KPI", 800_000, 1_500_000, "KZT", False, "month"),
+    ("150к-300к рублей gross", 150_000, 300_000, "RUB", True, "month"),
+    ("от 250 до 500 тыс.тенге", 250_000, 500_000, "KZT", None, "month"),
+    ("450 000 ₸ за месяц, до вычета налогов", 450_000, 450_000, "KZT", True, "month"),
 ]
 
 
@@ -35,8 +39,14 @@ def test_parse_salary(raw, lo, hi, cur, gross, period):
     assert (s.salary_from, s.salary_to, s.currency, s.gross, s.period) == (lo, hi, cur, gross, period)
 
 
-def test_salary_without_numbers():
-    s = parse_salary("Конкурентная зарплата (обсуждаем на интервью)")
+@pytest.mark.parametrize("raw", [
+    "Конкурентная зарплата (обсуждаем на интервью)",
+    "20 to 30 % of equity",
+    "обсуждается лично",
+    "На период стажировки оплата не предусмотрена.",
+])
+def test_salary_without_amount(raw):
+    s = parse_salary(raw)
     assert s.salary_from is None and s.salary_to is None
 
 
