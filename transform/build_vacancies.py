@@ -17,7 +17,9 @@ from transform.llm_extract import PROMPT_VERSION, is_verbatim
 from transform.parse_dsml import parse_dsml
 from transform.parse_halyk import parse_halyk
 from transform.parse_keyvalue import parse_keyvalue
-from transform.roles import classify_role, title_seniority
+from transform.llm_roles import PROMPT_VERSION as ROLE_PROMPT_VERSION
+from transform.llm_roles import normalize_role
+from transform.roles import ROLE_GROUPS, classify_role, title_seniority
 
 DSML = ("rules_dsml", parse_dsml)
 KEY_VALUE = ("rules_keyvalue", parse_keyvalue)
@@ -40,14 +42,17 @@ GENERIC_COMPANY = re.compile(
     re.IGNORECASE,
 )
 
+# LLM decisions for vacancies the title rules couldn't classify (filled in main())
+LLM_ROLES: dict[tuple[str, int, int], str] = {}
+
 INSERT = """
 INSERT INTO clean.vacancies (
     channel_username, message_id, vacancy_idx, posted_at, method, title, company,
     location_raw, city, is_kz, work_format, relocation,
     salary_raw, salary_from, salary_to, salary_currency, salary_gross, salary_period, salary_note,
-    body, seniority, is_internship, flags, role, role_group, level)
+    body, seniority, is_internship, flags, role, role_group, level, role_source)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s)
+        %s, %s, %s, %s)
 """
 
 
@@ -57,10 +62,14 @@ def row(channel, message_id, idx, posted_at, method, title, company, loc, s, bod
     level = seniority or title_seniority(title)
     if is_internship and level is None:
         level = "intern"
+    role_source = "title_rules"
+    llm_role = LLM_ROLES.get((channel, message_id, idx))
+    if role in ("unknown", "analyst_other") and llm_role:
+        role, role_group, role_source = llm_role, ROLE_GROUPS[llm_role], "llm_text"
     return (channel, message_id, idx, posted_at, method, title, company,
             loc.raw, loc.city, loc.is_kz, loc.work_format, loc.relocation,
             s.raw, s.salary_from, s.salary_to, s.currency, s.gross, s.period, s.note,
-            body, seniority, is_internship, flags, role, role_group, level)
+            body, seniority, is_internship, flags, role, role_group, level, role_source)
 
 
 def llm_rows(channel, message_id, posted_at, text, response):
@@ -90,6 +99,12 @@ def main() -> None:
     rows = []
     with psycopg.connect(DATABASE_URL) as conn:
         conn.execute("DELETE FROM clean.vacancies")
+        LLM_ROLES.clear()
+        LLM_ROLES.update({
+            (c, m, i): normalize_role(role) for c, m, i, role in conn.execute(
+                "SELECT channel_username, message_id, vacancy_idx, role FROM clean.llm_roles "
+                "WHERE prompt_version = %s", (ROLE_PROMPT_VERSION,))
+        })
         answers = {
             (ch, mid): response
             for ch, mid, response in conn.execute(
@@ -135,7 +150,7 @@ def main() -> None:
         print(f"{channel:<17} {c['posts']:>6} {c['llm']:>6} {c['llm_none']:>10} {c['rules']:>6} "
               f"{c['no_answer']:>8} {c['vacancies']:>10}")
     print(f"Total vacancies: {sum(c['vacancies'] for c in stats.values()):,}")
-    roles = Counter(r[-3] for r in rows)
+    roles = Counter(r[-4] for r in rows)
     print("\nBy role: " + ", ".join(f"{role} {n:,}" for role, n in roles.most_common()))
 
 

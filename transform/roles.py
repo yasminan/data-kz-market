@@ -21,6 +21,17 @@ def _rules() -> tuple[list[tuple[str, str, re.Pattern]], re.Pattern]:
     return rules, re.compile(cfg["unknown_titles"], re.IGNORECASE)
 
 
+def _groups() -> dict[str, str]:
+    with open(CONFIG, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    groups = {r["role"]: r["group"] for r in cfg["roles"]}
+    groups.update({"non_it": "non_it", "unknown": "unknown"})
+    return groups
+
+
+ROLE_GROUPS = _groups()
+
+
 def classify_role(title: str | None) -> tuple[str, str]:
     """Return (role, group) for a job title."""
     if not title or not title.strip():
