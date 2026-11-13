@@ -5,6 +5,7 @@ The model copies location and salary text verbatim; our own parsers in fields.py
 into numbers, so rules and LLM rows are normalised the same way.
 
 Test run (no database writes): uv run python -m transform.llm_extract --sample 20
+Same posts, new prompt:        uv run python -m transform.llm_extract --rerun data/llm_test_v1.json
 """
 import argparse
 import json
@@ -17,22 +18,30 @@ import psycopg
 from collector.config import DATABASE_URL
 
 MODEL = "claude-haiku-5-5"
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 PRICE_IN, PRICE_OUT = 0.10, 0.50  # USD per million tokens, Haiku 5.5 (Nov 2026, prompts <= 100K)
 MAX_POST_CHARS = 4000
 
 SYSTEM = """You extract job vacancies from Telegram posts from Kazakhstani job channels.
 Posts can be in Russian, Kazakh, English or a mix.
 
-Rules:
-- A vacancy is a specific open position (job, internship or trainee role) that people can apply to.
-  Events, courses, grants, hackathons, advice, news, ads and people looking for work are not vacancies.
+What counts as a vacancy:
+- A specific open position (job, internship or trainee role) that people can apply to.
+- Not vacancies: events, courses, grants, hackathons, advice, news, ads, people looking for work,
+  and startups looking for users, partners, investors or unnamed "people" without a named role.
 - A post may contain several vacancies: return each one separately. If there are none, return an empty list.
-- Copy title and company as written in the post, without emojis or hashtags. Do not translate.
-- location_text and salary_text must be exact substrings copied from the post. Do not normalise,
-  convert or guess them. Use null if the post doesn't state them.
-- seniority only if the post states it (intern, junior, middle, senior, lead); otherwise null.
-- is_internship is true only for internships, trainee programs or student positions.
+
+Fields:
+- title: a short job title in the post's language. If the post names the role inside a sentence,
+  write it as a title in base (nominative) form: "ищем стажера на позицию интернет-маркетолога" ->
+  "Стажер интернет-маркетолог". Use the most specific role name in the post ("Senior Python разработчик",
+  not just "python"). Do not translate. Use null if the post doesn't name the role (e.g. only a company name).
+- company: as written in the post, without emojis or hashtags; null if not stated.
+- location_text and salary_text: exact substrings copied from the post. Do not normalise, convert,
+  combine or guess them. Use null if the post doesn't state them.
+- seniority: only from explicit words: intern / стажер, junior / младший, middle, senior / старший,
+  lead / team lead / тимлид. Words like "ведущий" or "главный" are grade names, not seniority: use null.
+- is_internship: true only for internships, trainee programs or student positions.
 - Never add information that is not in the post."""
 
 TOOL = {
@@ -46,7 +55,7 @@ TOOL = {
                 "items": {
                     "type": "object",
                     "properties": {
-                        "title": {"type": "string"},
+                        "title": {"type": ["string", "null"]},
                         "company": {"type": ["string", "null"]},
                         "location_text": {"type": ["string", "null"]},
                         "salary_text": {"type": ["string", "null"]},
@@ -101,11 +110,16 @@ def is_verbatim(fragment: str | None, text: str) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sample", type=int, default=20)
+    parser.add_argument("--rerun", help="reuse the posts from an earlier test file, to compare prompts")
     args = parser.parse_args()
 
-    per_channel = math.ceil(args.sample / 6)
-    with psycopg.connect(DATABASE_URL) as conn:
-        posts = conn.execute(UNPARSED_SAMPLE, (per_channel,)).fetchall()
+    if args.rerun:
+        with open(args.rerun, encoding="utf-8") as f:
+            posts = [(r["channel"], r["message_id"], r["text"]) for r in json.load(f)]
+    else:
+        per_channel = math.ceil(args.sample / 6)
+        with psycopg.connect(DATABASE_URL) as conn:
+            posts = conn.execute(UNPARSED_SAMPLE, (per_channel,)).fetchall()
 
     client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
     tokens_in = tokens_out = 0
@@ -124,7 +138,7 @@ def main() -> None:
             flags = [f for f, ok in (("salary not verbatim", is_verbatim(v["salary_text"], text)),
                                      ("location not verbatim", is_verbatim(v["location_text"], text)))
                      if not ok]
-            print(f"   - {v['title'][:45]} | {v['company']} | {v['location_text']} | "
+            print(f"   - {(v['title'] or '(no title)')[:45]} | {v['company']} | {v['location_text']} | "
                   f"{v['salary_text']} | {v['seniority']} | intern={v['is_internship']}"
                   + (f"  !! {', '.join(flags)}" if flags else ""))
 

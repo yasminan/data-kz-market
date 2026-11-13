@@ -1,0 +1,120 @@
+# Role classification by job title. Rules are checked top to bottom; the first match wins,
+# so more specific roles come before general ones (product manager before analyst,
+# systems analyst before business analyst, specific analysts before "any analyst").
+# Patterns are case-insensitive regular expressions matched anywhere in the title.
+#
+# Groups: data_analytics (the focus of the project), other_it, non_it.
+# Titles that name no role at all ("стажер", "intern") get role "unknown".
+
+roles:
+  # teaching a subject is not doing it: "Преподаватель Data-аналитик", "Python mentor"
+  - role: non_it
+    group: non_it
+    patterns:
+      - 'преподавател|учител|teacher|tutor|лектор|lecturer|куратор курс'
+
+  - role: product_project
+    group: other_it
+    patterns:
+      - 'product manager|product owner|продакт|project manager|проектн\w* менеджер|менеджер проект'
+      - 'руководител\w* проект|scrum|delivery manager|engineering manager|product[- ]?менеджер'
+      - 'продукт[- ]?менеджер|менеджер по продукту|\bcpo\b|\bpm\b|agile coach'
+
+  - role: security
+    group: other_it
+    patterns:
+      - 'security|безопасност|\bsoc\b|pentest|пентест|red team|кибер|cyber|devsecops'
+  # (IT audit is handled under other_it below)
+
+  - role: data_scientist
+    group: data_analytics
+    patterns:
+      - 'data[- ]?scien|дата[- ]?сайен|data science|\bds\b|дата[- ]?майнер|data miner'
+      - 'специалист по обработке данных|моделист|risk model'
+
+  - role: ml_engineer
+    group: data_analytics
+    patterns:
+      - 'machine learning|\bml\b|\bml-|мл-|\bai\b|computer vision|\bcv\b|\bnlp\b|deep learning|mlops'
+      - '\bllm|prompt engineer|нейросет|neural|\bspeech|\btts\b|\basr\b|генеративн|genai|research engineer'
+
+  - role: data_engineer
+    group: data_analytics
+    patterns:
+      - 'data[- ]?engineer|data[- ]?инженер|дата[- ]?инженер|\betl\b|etl-|\bdwh\b|data integration'
+      - 'data platform|data quality|data architect|data warehouse|хранилищ\w* данных'
+      - 'spark|airflow|informatica'
+
+  - role: bi
+    group: data_analytics
+    patterns:
+      - '\bbi\b|bi-|power bi|tableau|qlik|business intelligence'
+
+  - role: product_analyst
+    group: data_analytics
+    patterns:
+      - 'product[- ]?analyst|продуктов\w* аналитик|product[- ]?аналитик|growth analyst|аналитик в продуктов'
+
+  - role: systems_analyst
+    group: data_analytics
+    patterns:
+      - 'системн\w*[- ]аналитик|systems? analyst|аналитик[- ]проектировщик|system/business analyst'
+
+  - role: business_analyst
+    group: data_analytics
+    patterns:
+      - 'бизнес[- /]*аналитик|business[- ]?analy|\bba\b|аналитик\w*( \w+)? бизнес|бизнес-процесс'
+
+  - role: data_analyst
+    group: data_analytics
+    patterns:
+      - 'data[- ]?analy|аналитик\w* данных|data[- ]?аналитик|дата[- ]?аналитик|sql[- ]?аналитик'
+      - 'web[- ]?analyst|marketing analyst|маркетингов\w* аналитик|\bcx analyst|crm[- ]?аналитик|аналитик crm'
+
+  - role: finance_analyst
+    group: data_analytics
+    patterns:
+      - 'финансов\w* аналитик|financial analyst|analyst finance|кредитн\w* аналитик|кредиттік аналитик'
+      - 'инвестиционн\w* аналитик|investment analyst|риск[- ]аналитик|risk analyst'
+      - 'аналитик\w* (по )?уч[её]т|дебитор|кредиторск|бухгалтерск\w* аналитик'
+
+  - role: analyst_other
+    group: data_analytics
+    patterns:
+      - 'аналитик|analyst|аналитика|analytics|талдаушы|data curation|разметк\w* данных|data annotat'
+
+  - role: qa
+    group: other_it
+    patterns:
+      - '\bqa\b|тестировщик|tester|testing|автотест|quality assurance'
+
+  - role: devops_infra
+    group: other_it
+    patterns:
+      - 'devops|\bsre\b|системн\w* администратор|сисадмин|system administrator|sysadmin'
+      - 'администратор баз|database administrator|\bdba\b|сетев|network|инфраструктур|infrastructure'
+      - 'cloud engineer|it[- ]специалист|ит[- ]специалист|техническ\w* поддержк|tech support|helpdesk'
+      - 'support engineer|администратор (приложений|систем|серверов)|linux|servers support'
+      - 'поддержк\w* систем\w* ит|it support|специалист по it|специалист по ит'
+
+  - role: software_engineer
+    group: other_it
+    patterns:
+      - 'разработчик|developer|программист|software|back[- ]?end|front[- ]?end|full[- ]?stack'
+      - '(?<!консультант )\b1[cс]\b(?![- ]?консультант)|верстальщик|android|\bios\b|mobile|python|java|golang|\bgo\b|php|\.net'
+      - 'react|node|rust|c\+\+|kotlin|swift|game dev|unity|web[- ]?engineer|tech lead|техлид|\bcto\b'
+
+  - role: design
+    group: other_it
+    patterns:
+      - 'дизайнер|designer|\bux\b|\bui\b'
+
+  # IT roles that fit none of the above: ERP/1C/SAP consultants, implementation, technical writers
+  - role: other_it
+    group: other_it
+    patterns:
+      - '\bsap\b|\berp\b|1[сc][- ]?консультант|консультант 1[сc]|технический писатель|technical writer'
+      - 'it[- ]?(консультант|consultant)|внедрени|implementation|интеграц|integration|\bcrm\b|bitrix|битрикс'
+      - 'architect|архитектор|it[- ]?audit|ит[- ]?аудит|itauditor'
+
+unknown_titles: '^(стажер|стажёр|стажеры|intern|interns|internship|стажировка|trainee|вакансия|сотрудник|сотрудники|специалист|работа)$'

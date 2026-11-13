@@ -54,8 +54,10 @@ CURRENCIES = [
 GROSS = re.compile(r"(gross|брутто|до вычета)", re.IGNORECASE)
 NET = re.compile(r"(\bnet\b|нетто|на руки|после вычета)", re.IGNORECASE)
 HOUR = re.compile(r"(per hour|/\s?hour|в час|/\s?час|за час)", re.IGNORECASE)
-YEAR = re.compile(r"(per year|per annum|annual|/\s?year|в год|годовой)", re.IGNORECASE)
+# "годовой бонус" / "annual bonus" is a bonus, not a yearly salary, so those words aren't used
+YEAR = re.compile(r"(per year|per annum|a year|/\s?year|в год\b|annual salary|годовая зарплата)", re.IGNORECASE)
 PROJECT = re.compile(r"(за проект|per project)", re.IGNORECASE)
+PERCENT = re.compile(r"\d[\d.,]*\s*((to|-|–|до)\s*\d[\d.,]*\s*)?%")
 FROM_WORD = re.compile(r"(\bот\b|\bfrom\b)\s*$", re.IGNORECASE)
 TO_WORD = re.compile(r"(\bдо\b|up to|\bmax\b)\s*$", re.IGNORECASE)
 
@@ -86,6 +88,8 @@ def parse_salary(raw: str | None) -> Salary:
     if not raw:
         return Salary()
     text = raw.replace("**", "").replace("__", "")
+    # percentages are bonuses or equity, not salary: "20 to 30 % of equity", "бонус 30%"
+    text = PERCENT.sub(" ", text)
     found = list(AMOUNT.finditer(text))
     if not found:
         return Salary(raw=raw)
